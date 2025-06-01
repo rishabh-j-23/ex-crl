@@ -45,3 +45,11 @@ func GetCurrentProjectName() string {
 	projectName := filepath.Base(currentPath)
 	return projectName
 }
+
+func GetProjectDir() string {
+	return filepath.Join(ConfigDir, "projects", GetCurrentProjectName())
+}
+
+func GetRequestsDir() string {
+	return filepath.Join(GetProjectDir(), "requests")
+}

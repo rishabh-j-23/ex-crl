@@ -14,8 +14,7 @@ import (
 )
 
 func AddRequest(httpMethod, requestName, endpoint string) {
-	projectName := utils.GetCurrentProjectName()
-	requestsDir := filepath.Join(utils.ConfigDir, "projects", projectName, "requests")
+	requestsDir := utils.GetRequestsDir()
 	assert.EnsureDirExists(requestsDir)
 
 	filePath := filepath.Join(requestsDir, requestName+".json")
@@ -42,7 +41,7 @@ func AddRequest(httpMethod, requestName, endpoint string) {
 
 	editor := os.Getenv("EDITOR")
 	if editor == "" {
-		editor = "vim"
+		editor = "nvim"
 	}
 
 	cmd := exec.Command(editor, filePath)

@@ -6,5 +6,5 @@ type WorkflowStep struct {
 }
 
 type Workflow struct {
-	workflow []WorkflowStep `json:"workflow"`
+	Workflow []WorkflowStep `json:"workflow"`
 }

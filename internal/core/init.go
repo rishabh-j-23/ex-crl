@@ -9,6 +9,7 @@ import (
 	"github.com/rishabh-j-23/ex-crl/internal/assert"
 	"github.com/rishabh-j-23/ex-crl/internal/models"
 	"github.com/rishabh-j-23/ex-crl/utils"
+	"github.com/rishabh-j-23/ex-crl/utils/headers"
 )
 
 func InitProject(projectName string, envName string, baseUrl string) {
@@ -20,8 +21,8 @@ func InitProject(projectName string, envName string, baseUrl string) {
 	// create the dir to store all projects and configs and all
 	utils.EnsureConfigDir(utils.ConfigDir)
 
-	projectDir := filepath.Join(utils.ConfigDir, "projects", projectName)
-	requestsDir := filepath.Join(projectDir, "requests")
+	projectDir := utils.GetProjectDir()
+	requestsDir := utils.GetRequestsDir()
 
 	dirs := []string{
 		projectDir,
@@ -41,11 +42,17 @@ func InitProject(projectName string, envName string, baseUrl string) {
 	// Add current environment to configured environments slice
 	configuredEnvs := []models.Environment{currentEnv}
 
+	// default headers
+	globalHeaders := map[string]string{
+		headers.ContentType: "application/json",
+	}
+
 	// Full project config
 	projectCfg := models.ProjectConfig{
 		Name:          projectName,
 		ActiveEnv:     currentEnv,
 		ConfiguredEnv: configuredEnvs,
+		GlobalHeaders: globalHeaders,
 	}
 
 	createFileWithStruct(projectDir, utils.ProjectConfigJson, projectCfg)

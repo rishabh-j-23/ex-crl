@@ -29,9 +29,8 @@ var initCmd = &cobra.Command{
 		}
 
 		assert.EnsureNotEmpty(map[string]string{
-			"projectName": projectName,
-			"envName":     envName,
-			"baseUrl":     baseUrl,
+			"envName": envName,
+			"baseUrl": baseUrl,
 		})
 
 		core.InitProject(projectName, envName, baseUrl)

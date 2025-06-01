@@ -1,23 +1,30 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/rishabh-j-23/ex-crl/internal/assert"
+	"github.com/rishabh-j-23/ex-crl/internal/core"
+	"github.com/rishabh-j-23/ex-crl/utils"
 	"github.com/spf13/cobra"
 )
 
 // execCmd represents the exec command
-var execCmd = &cobra.Command{
-	Use:   "exec",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+var execCmd = &cobra.Command{
+	Use:   "exec [request-name]",
+	Short: "Execute a stored HTTP request",
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("exec called")
+		var requestName string
+		if len(args) == 0 {
+			requestsDir := utils.GetRequestsDir()
+			requestName = utils.FzfSearch(requestsDir)
+		} else {
+			requestName = args[0]
+			assert.EnsureNotEmpty(map[string]string{
+				"request-name": requestName,
+			})
+		}
+		core.ExecRequest(requestName)
 	},
 }
 
