@@ -38,3 +38,16 @@ func GetProjectConfig() string {
 	projectsDir := GetProjectDir()
 	return GetFile(projectsDir, ProjectConfigJson)
 }
+
+// Only returns file name with .json
+func SelectFile(args []string, dir string) string {
+	if len(args) == 0 {
+		requestsDir := dir
+		return FzfSearch(requestsDir)
+	} else {
+		assert.EnsureNotEmpty(map[string]string{
+			"request-name": args[0],
+		})
+		return args[0] + ".json"
+	}
+}

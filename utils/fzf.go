@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Only returns file name with .json
 func FzfSearch(dir string) string {
 	cmd := exec.Command(
 		"fzf",

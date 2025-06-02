@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
 	"github.com/rishabh-j-23/ex-crl/internal/assert"
+	"github.com/rishabh-j-23/ex-crl/internal/editor"
 	"github.com/rishabh-j-23/ex-crl/internal/models"
 	"github.com/rishabh-j-23/ex-crl/utils"
 )
@@ -39,18 +39,7 @@ func AddRequest(httpMethod, requestName, endpoint string) {
 	err = os.WriteFile(filePath, data, 0644)
 	assert.ErrIsNil(err, "Failed to write request file")
 
-	editor := os.Getenv("EDITOR")
-	if editor == "" {
-		editor = "nvim"
-	}
-
-	cmd := exec.Command(editor, filePath)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err = cmd.Run()
-	assert.ErrIsNil(err, "Failed to open $EDITOR")
+	editor.LaunchEditor(filePath)
 
 	fmt.Printf("Request '%s' added at %s\n", requestName, filePath)
 }
