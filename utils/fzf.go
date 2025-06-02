@@ -1,22 +1,27 @@
 package utils
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 )
 
 func FzfSearch(dir string) string {
-
-	cmd := exec.Command("fzf", "--preview", "bat --style=numbers --color=always --paging=never {}", "--style", "full")
+	cmd := exec.Command(
+		"fzf",
+		"--height", "1%", // Only take up 40% of the terminal height
+		"--layout", "reverse", // Show results at the bottom
+		"--preview", "bat --style=numbers --color=always --paging=never "+dir+"/{}",
+		"--preview-window", "right:60%",
+		"--style", "minimal",
+	)
 	cmd.Dir = dir
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 
 	out, err := cmd.Output()
 	if err != nil {
-		fmt.Println("Failed to select request:", err)
+		println("Failed to select request:", err.Error())
 		os.Exit(1)
 	}
 	return strings.TrimSpace(string(out))

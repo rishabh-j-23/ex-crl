@@ -9,7 +9,7 @@ import (
 // requestCmd represents the request command
 var requestCmd = &cobra.Command{
 	Use:   "request [http-method] [request-name] [endpoint]",
-	Short: "Add a new request definition",
+	Short: "Add a new rest request definition",
 	Args:  cobra.ExactArgs(3),
 	Run: func(cmd *cobra.Command, args []string) {
 		httpMethod := args[0]
@@ -26,5 +26,5 @@ var requestCmd = &cobra.Command{
 }
 
 func init() {
-	addCmd.AddCommand(requestCmd)
+	AddCmd.AddCommand(requestCmd)
 }
