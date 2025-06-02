@@ -1,4 +1,4 @@
-package cmd
+package commands
 
 import (
 	"github.com/rishabh-j-23/ex-crl/internal/assert"
