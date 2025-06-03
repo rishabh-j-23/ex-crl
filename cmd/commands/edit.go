@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"log"
 	"path/filepath"
 
 	"github.com/rishabh-j-23/ex-crl/internal/editor"

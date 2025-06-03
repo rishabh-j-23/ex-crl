@@ -25,6 +25,7 @@ func init() {
 	EnsureConfigDir(ConfigDir)
 }
 
+// Check if config dir exists else create the directory
 func EnsureConfigDir(dir string) {
 	info, err := os.Stat(dir)
 	if os.IsNotExist(err) {

@@ -1,7 +1,6 @@
 package core
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,60 +11,57 @@ import (
 	"github.com/rishabh-j-23/ex-crl/utils/headers"
 )
 
-func InitProject(projectName string, envName string, baseUrl string) {
-	// set project to basename of current dir
+// InitProject initializes a new project with optional custom name, environment, and base URL.
+func InitProject(projectName, envName, baseURL string) {
 	if projectName == "" {
 		projectName = utils.GetCurrentProjectName()
 	}
 
-	// create the dir to store all projects and configs and all
+	// Ensure main config directory exists
 	utils.EnsureConfigDir(utils.ConfigDir)
 
 	projectDir := utils.GetProjectDir()
 	requestsDir := utils.GetRequestsDir()
 
-	dirs := []string{
-		projectDir,
-		requestsDir,
-	}
+	createDirs(projectDir, requestsDir)
 
-	for _, dir := range dirs {
-		err := os.MkdirAll(dir, 0755)
-		assert.ErrIsNil(err, fmt.Sprintf("Failed to create directory %s", dir))
-	}
-
-	currentEnv := models.Environment{
+	// Setup environment
+	env := models.Environment{
 		Name:    envName,
-		BaseUrl: baseUrl,
+		BaseUrl: baseURL,
 	}
 
-	// Add current environment to configured environments slice
-	configuredEnvs := []models.Environment{currentEnv}
-
-	// default headers
-	globalHeaders := map[string]string{
+	// Default global headers
+	defaultHeaders := map[string]string{
 		headers.ContentType: "application/json",
 	}
 
-	// Full project config
 	projectCfg := models.ProjectConfig{
 		Name:          projectName,
-		ActiveEnv:     currentEnv,
-		ConfiguredEnv: configuredEnvs,
-		GlobalHeaders: globalHeaders,
+		ActiveEnv:     env,
+		ConfiguredEnv: []models.Environment{env},
+		GlobalHeaders: defaultHeaders,
 	}
 
-	createFileWithStruct(projectDir, utils.ProjectConfigJson, projectCfg)
+	createJSONFileIfAbsent(projectDir, utils.ProjectConfigJson, projectCfg)
+	utils.CreateWorflowFile()
 
-	fmt.Printf("Project '%s' initialized at %s\n", projectName, projectDir)
+	fmt.Printf("Project '%s' initialized at: %s\n", projectName, projectDir)
 }
 
-func createFileWithStruct(dir, filename string, data any) {
-	path := filepath.Join(dir, filename)
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		bytes, err := json.MarshalIndent(data, "", "  ")
-		assert.ErrIsNil(err, "Failed to marshal JSON for "+filename)
-		err = os.WriteFile(path, bytes, 0644)
-		assert.ErrIsNil(err, "Failed to write "+filename)
+func createDirs(dirs ...string) {
+	for _, dir := range dirs {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			assert.ErrIsNil(err, fmt.Sprintf("❌ Failed to create directory: %s", dir))
+		}
+	}
+}
+
+// createJSONFileIfAbsent creates a file with marshalled JSON data if it does not already exist.
+func createJSONFileIfAbsent(dir, filename string, data any) {
+	filePath := filepath.Join(dir, filename)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		utils.SaveDataToFile(filePath, data)
 	}
 }

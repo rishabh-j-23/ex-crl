@@ -35,3 +35,9 @@ func EnsureNotEmpty(namedArgs map[string]string) {
 		os.Exit(1)
 	}
 }
+
+func NotNil[T any](value *T, message string) {
+	if value == nil {
+		fmt.Println(message)
+	}
+}
