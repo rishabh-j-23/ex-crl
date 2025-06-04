@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -14,11 +15,13 @@ import (
 )
 
 func ExecRequest(requestName string) {
-	var request models.Request
+	// First run the workflow steps if any
+	runWorkflowSteps()
 
+	// Then run the main request
+	var request models.Request
 	path := utils.GetFile(utils.GetRequestsDir(), requestName)
 	err := utils.LoadJSONFile(path, &request)
-
 	assert.ErrIsNil(err, fmt.Sprintf("Error unmarshalling json file %s", requestName))
 
 	PerformRequest(request)
@@ -50,4 +53,44 @@ func PerformRequest(request models.Request) {
 	}
 	end := time.Now()
 	fmt.Println("total time:", end.Sub(start))
+}
+
+func runWorkflowSteps() {
+	var workflow models.Workflow
+	err := utils.LoadJSONFile(utils.GetWorkflowFile(), &workflow)
+	if err != nil {
+		// No workflow file or load failed, skip silently
+		return
+	}
+
+	for _, step := range workflow.Workflow {
+		if step.Exec {
+			var req models.Request
+			path := utils.GetFile(utils.GetRequestsDir(), step.RequestName+".json")
+			err := utils.LoadJSONFile(path, &req)
+			if err == nil {
+				executeSilently(req)
+			}
+		}
+	}
+}
+
+func executeSilently(request models.Request) {
+	var projectConfig models.ProjectConfig
+	utils.LoadJSONFile(utils.GetProjectConfig(), &projectConfig)
+
+	httpReq, err := models.CreateRequest(request, projectConfig)
+	if err != nil {
+		return
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		log.Println(request.Name, "not executed succesfully")
+		return
+	}
+	log.Println(request.Name, "executed succesfully")
+	defer resp.Body.Close()
+	io.Copy(io.Discard, resp.Body) // ignore response
 }
