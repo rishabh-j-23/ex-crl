@@ -2,22 +2,47 @@ package workflow
 
 import (
 	"fmt"
+	"log"
+	"path/filepath"
+	"strings"
 
+	"github.com/rishabh-j-23/ex-crl/internal/models"
+	"github.com/rishabh-j-23/ex-crl/utils"
 	"github.com/spf13/cobra"
 )
 
-// addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Add a request to the workflow",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		// Load existing workflow config
+		var wf models.Workflow
+		err := utils.LoadJSONFile(utils.GetWorkflowFile(), &wf)
+		if err != nil {
+			log.Fatalf("Failed to load workflow config: %v", err)
+		}
+
+		// Select a request file using fzf
+		requestDir := utils.GetRequestsDir()
+		selected := utils.FzfSearch(requestDir)
+		if selected == "" {
+			fmt.Println("No request selected.")
+			return
+		}
+
+		// Strip `.json` extension if present
+		requestName := strings.TrimSuffix(filepath.Base(selected), filepath.Ext(selected))
+
+		// Add the new workflow step
+		step := models.WorkflowStep{
+			RequestName: requestName,
+			Exec:        true,
+		}
+		wf.Workflow = append(wf.Workflow, step)
+
+		// Save updated workflow
+		utils.SaveWorkflowConfig(wf)
+		fmt.Printf("Added '%s' to workflow\n", requestName)
 	},
 }
 
