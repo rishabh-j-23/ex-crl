@@ -1,45 +1,13 @@
 package models
 
-import (
-	"bytes"
-	"encoding/json"
-	"net/http"
-)
-
+// Request defines the structure of an HTTP request with support for dynamic
+// path and query parameters, custom headers, and a JSON body.
 type Request struct {
-	Name       string            `json:"name"`
-	HttpMethod string            `json:"http-method"`
-	Endpoint   string            `json:"endpoint"`
-	Headers    map[string]string `json:"headers"`
-	Body       any               `json:"body"`
-}
-
-func CreateRequest(r Request, p ProjectConfig) (*http.Request, error) {
-	url := p.ActiveEnv.BaseUrl + r.Endpoint
-
-	var bodyReader *bytes.Reader
-	if r.Body != nil {
-		bodyBytes, err := json.Marshal(r.Body)
-		if err != nil {
-			return nil, err
-		}
-		bodyReader = bytes.NewReader(bodyBytes)
-	} else {
-		bodyReader = bytes.NewReader([]byte{})
-	}
-
-	req, err := http.NewRequest(r.HttpMethod, url, bodyReader)
-	if err != nil {
-		return nil, err
-	}
-
-	for k, v := range p.GlobalHeaders {
-		req.Header.Set(k, v)
-	}
-
-	for k, v := range r.Headers {
-		req.Header.Set(k, v)
-	}
-
-	return req, nil
+	Name        string            `json:"name"`
+	HttpMethod  string            `json:"http-method"`
+	Endpoint    string            `json:"endpoint"`
+	Headers     map[string]string `json:"headers"`
+	QueryParams map[string]string `json:"query-params"`
+	PathParams  map[string]string `json:"path-params"`
+	Body        any               `json:"body"`
 }

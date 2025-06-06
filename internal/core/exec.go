@@ -32,7 +32,7 @@ func PerformRequest(request models.Request) {
 	utils.LoadJSONFile(utils.GetProjectConfig(), &projectConfig)
 
 	start := time.Now()
-	httpReq, err := models.CreateRequest(request, projectConfig)
+	httpReq, err := CreateRequest(request, projectConfig)
 	assert.ErrIsNil(err, "Error creating the http request")
 
 	// Example: Use it with http.Client
@@ -79,7 +79,7 @@ func executeSilently(request models.Request) {
 	var projectConfig models.ProjectConfig
 	utils.LoadJSONFile(utils.GetProjectConfig(), &projectConfig)
 
-	httpReq, err := models.CreateRequest(request, projectConfig)
+	httpReq, err := CreateRequest(request, projectConfig)
 	if err != nil {
 		return
 	}
