@@ -33,17 +33,34 @@ func PerformRequest(request models.Request) {
 
 	start := time.Now()
 	httpReq, err := CreateRequest(request, projectConfig)
-	assert.ErrIsNil(err, "Error creating the http request")
+	assert.ErrIsNil(err, "Error creating the HTTP request")
 
-	// Example: Use it with http.Client
-	client := &http.Client{}
+	client := &http.Client{
+		Jar: utils.LoadCookiesFromDisk(), // Load persistent cookies
+	}
 	resp, err := client.Do(httpReq)
 	assert.ErrIsNil(err, "Error while performing the request")
 
-	bodyBytes, err := io.ReadAll(resp.Body)
-	assert.ErrIsNil(err, "Failed to read response body")
+	// After building httpReq
+	utils.TrackDomain(httpReq.URL)
+
+	utils.SaveCookiesToDisk()
 
 	defer resp.Body.Close()
+
+	end := time.Now()
+
+	printRequestDetails(httpReq, resp, end.Sub(start))
+}
+
+func printRequestDetails(httpReq *http.Request, httpResp *http.Response, timeTakenByRequest time.Duration) {
+	bodyBytes, err := io.ReadAll(httpResp.Body)
+	assert.ErrIsNil(err, "Failed to read response body")
+
+	fmt.Printf("%s %s %s %s\n", httpReq.Proto, httpReq.Method, httpReq.URL.RequestURI(), httpResp.Status)
+	fmt.Printf("Host: %s\n\n", httpReq.URL.Hostname())
+
+	// Pretty print JSON if possible
 	var prettyJSON bytes.Buffer
 	if err := json.Indent(&prettyJSON, bodyBytes, "", "  "); err != nil {
 		// If it's not JSON, just print raw
@@ -51,8 +68,8 @@ func PerformRequest(request models.Request) {
 	} else {
 		fmt.Println(prettyJSON.String())
 	}
-	end := time.Now()
-	fmt.Println("total time:", end.Sub(start))
+
+	fmt.Printf("\n[time taken: %v]\n", timeTakenByRequest)
 }
 
 func runWorkflowSteps() {
