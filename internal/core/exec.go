@@ -41,9 +41,7 @@ func PerformRequest(request models.Request) {
 	resp, err := client.Do(httpReq)
 	assert.ErrIsNil(err, "Error while performing the request")
 
-	// After building httpReq
 	utils.TrackDomain(httpReq.URL)
-
 	utils.SaveCookiesToDisk()
 
 	defer resp.Body.Close()
@@ -101,12 +99,15 @@ func executeSilently(request models.Request) {
 		return
 	}
 
-	client := &http.Client{}
-	resp, err := client.Do(httpReq)
-	if err != nil {
-		log.Println(request.Name, "not executed succesfully")
-		return
+	client := &http.Client{
+		Jar: utils.LoadCookiesFromDisk(), // Load persistent cookies
 	}
+	resp, err := client.Do(httpReq)
+	assert.ErrIsNil(err, "Error while performing the request")
+
+	utils.TrackDomain(httpReq.URL)
+	utils.SaveCookiesToDisk()
+
 	log.Println(request.Name, "executed succesfully")
 	defer resp.Body.Close()
 	io.Copy(io.Discard, resp.Body) // ignore response

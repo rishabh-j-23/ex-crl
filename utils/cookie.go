@@ -26,7 +26,7 @@ func LoadCookiesFromDisk() http.CookieJar {
 	jar, _ := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
 	cookieJar = jar
 
-	path := filepath.Join(GetProjectDir(), cookieFile)
+	path := filepath.Join(GetCookieStoragePath(), cookieFile)
 	if _, err := os.Stat(path); err == nil {
 		data, err := os.ReadFile(path)
 		if err == nil {
@@ -64,7 +64,7 @@ func SaveCookiesToDisk() {
 		}
 	}
 
-	path := filepath.Join(GetProjectDir(), cookieFile)
+	path := filepath.Join(GetCookieStoragePath(), cookieFile)
 	if nonExpiredFound {
 		data, _ := json.MarshalIndent(allCookies, "", "  ")
 		_ = os.WriteFile(path, data, 0644)
@@ -88,4 +88,12 @@ func filterValidCookies(cookies []*http.Cookie) []*http.Cookie {
 // TrackDomain marks a domain as used (to persist later).
 func TrackDomain(u *url.URL) {
 	usedDomains[u.Scheme+"://"+u.Host] = true
+}
+
+// GetCookieStoragePath returns a tmpfs-based path for cookie storage.
+func GetCookieStoragePath() string {
+	projectName := GetCurrentProjectName()
+	path := filepath.Join("/tmp", "ex-crl-cookies", projectName)
+	_ = os.MkdirAll(path, 0755)
+	return path
 }
