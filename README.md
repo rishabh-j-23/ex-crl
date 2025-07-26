@@ -22,6 +22,11 @@ make build
 make install
 ```
 
+## TODO
+
+- [ ] Add support for graphQL requests
+- [ ] Add support for windows 
+
 ## Usage
 
 ### 1. Initialize a New Project
@@ -104,3 +109,45 @@ ex-crl project --env
 This changes the environment used for request execution.
 
 This tool streamlines managing and executing HTTP requests in a project-oriented and environment-aware manner, making it easier to automate and test APIs.
+
+## Logging
+
+`ex-crl` uses structured logging for all operations. By default, logs are written to `/var/log/ex-crl/ex-crl.log` (requires root permissions to create the directory on first use). Logs are rotated daily, compressed after a day, and deleted after a week.
+
+If `/var/log/ex-crl` is not writable, logs will be written to `$HOME/ex-crl/logs/ex-crl.log` instead. You can check logs for troubleshooting and auditing.
+
+## Shell Autocompletion
+
+`ex-crl` supports shell autocompletion for Bash, Zsh, Fish, and PowerShell. To enable autocompletion, run:
+
+```bash
+ex-crl completion bash   # for Bash
+ex-crl completion zsh    # for Zsh
+ex-crl completion fish   # for Fish
+ex-crl completion powershell # for PowerShell
+```
+
+Follow the output instructions to add completion to your shell profile.
+
+## Running Tests
+
+To run all tests:
+
+```bash
+go test ./...
+```
+
+Ensure you have all dependencies installed. Tests are located in the `internal/` directory and cover core logic and request construction.
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+- Fork the repository and create a new branch for your feature or bugfix.
+- Write clear, concise commit messages and add tests for new features.
+- Run `go test ./...` and ensure all tests pass before submitting a pull request.
+- If you find a bug or have a feature request, please open an issue or submit a pull request on the GitHub repository.
+
+## License
+
+`ex-crl` is released under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -2,21 +2,23 @@ package assert
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strings"
 )
 
 func ErrIsNil(err error, message string) {
 	if err != nil {
-		log.Fatal(message, err)
+		slog.Error(message, "err", err)
+		os.Exit(1)
 	}
 }
 
 // EnsureDirExists checks if a directory exists, and creates it if it doesn't.
 func EnsureDirExists(path string) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		log.Fatalf("Directory does not exists; dir=%s, err=%v\n", path, err)
+		slog.Error("Directory does not exist", "dir", path, "err", err)
+		os.Exit(1)
 	}
 }
 

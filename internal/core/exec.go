@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -108,7 +108,7 @@ func executeSilently(request models.Request) {
 	utils.TrackDomain(httpReq.URL)
 	utils.SaveCookiesToDisk()
 
-	log.Println(request.Name, "executed succesfully")
+	slog.Info("Request executed successfully", "request", request.Name)
 	defer resp.Body.Close()
 	io.Copy(io.Discard, resp.Body) // ignore response
 }

@@ -2,7 +2,8 @@ package workflow
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
+	"os"
 
 	"github.com/rishabh-j-23/ex-crl/internal/models"
 	"github.com/rishabh-j-23/ex-crl/utils"
@@ -17,7 +18,8 @@ var removeCmd = &cobra.Command{
 		var wf models.Workflow
 		err := utils.LoadJSONFile(utils.GetWorkflowFile(), &wf)
 		if err != nil {
-			log.Fatalf("Failed to load workflow config: %v", err)
+			slog.Error("Failed to load workflow config", "err", err)
+			os.Exit(1)
 		}
 
 		if len(wf.Workflow) == 0 {

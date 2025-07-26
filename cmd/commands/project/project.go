@@ -13,9 +13,14 @@ var editProjectFile bool
 // projectCmd represents the project command
 var ProjectCmd = &cobra.Command{
 	Use:   "project",
-	Short: "perform project related operations",
-	Long: `project is auto selected based on current dir. 
-It is recommended to be in the root of project directory`,
+	Short: "Manage project configuration and environments.",
+	Long: `Manage project configuration and environments.
+
+Examples:
+  ex-crl project --edit         # Edit the project config file
+  ex-crl project --set-env dev  # Switch to the 'dev' environment
+
+Project is auto-selected based on the current directory. It is recommended to be in the root of your project directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flagVal, err := cmd.Flags().GetString("set-env")
 		assert.ErrIsNil(err, "Error parsing the val for --set-env")

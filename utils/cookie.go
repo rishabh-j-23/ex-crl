@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/json"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -20,10 +20,10 @@ const cookieFile = "cookies.json"
 
 // LoadCookiesFromDisk initializes the cookie jar and loads cookies.
 func LoadCookiesFromDisk() http.CookieJar {
-	log.Println("Loading cookies")
+	slog.Info("Loading cookies")
 
 	if cookieJar != nil {
-		log.Println("Using existing cookie jar in memory")
+		slog.Info("Using existing cookie jar in memory")
 		return cookieJar
 	}
 
@@ -31,35 +31,35 @@ func LoadCookiesFromDisk() http.CookieJar {
 	cookieJar = jar
 
 	path := filepath.Join(GetCookieStoragePath(), cookieFile)
-	log.Println("Cookie file path:", path)
+	slog.Info("Cookie file path", "path", path)
 
 	if _, err := os.Stat(path); err == nil {
-		log.Println("Found existing cookie file")
+		slog.Info("Found existing cookie file")
 
 		data, err := os.ReadFile(path)
 		if err != nil {
-			log.Printf("Error reading cookie file: %v\n", err)
+			slog.Info("Error reading cookie file", "err", err)
 			return jar
 		}
 
 		var raw map[string][]*http.Cookie
 		if err := json.Unmarshal(data, &raw); err != nil {
-			log.Printf("Error unmarshaling cookies: %v\n", err)
+			slog.Info("Error unmarshaling cookies", "err", err)
 			return jar
 		}
 
 		for host, cookies := range raw {
-			log.Printf("Loaded %d cookies for domain %s\n", len(cookies), host)
+			slog.Info("Loaded cookies for domain", "domain", host, "count", len(cookies))
 			u, err := url.Parse(host)
 			if err == nil {
 				jar.SetCookies(u, cookies)
 				usedDomains[host] = true
 			} else {
-				log.Printf("Invalid domain URL: %s\n", host)
+				slog.Info("Invalid domain URL", "domain", host)
 			}
 		}
 	} else {
-		log.Println("No cookie file found, starting fresh")
+		slog.Info("No cookie file found, starting fresh")
 	}
 
 	return jar
@@ -67,10 +67,10 @@ func LoadCookiesFromDisk() http.CookieJar {
 
 // SaveCookiesToDisk filters expired cookies and deletes file if none remain.
 func SaveCookiesToDisk() {
-	log.Println("Saving cookies")
+	slog.Info("Saving cookies")
 
 	if cookieJar == nil {
-		log.Println("Cookie jar is nil, nothing to save")
+		slog.Info("Cookie jar is nil, nothing to save")
 		return
 	}
 
@@ -89,22 +89,22 @@ func SaveCookiesToDisk() {
 	}
 
 	path := filepath.Join(GetCookieStoragePath(), cookieFile)
-	log.Println("Saving cookies to:", path)
+	slog.Info("Saving cookies to", "path", path)
 
 	if nonExpiredFound {
 		data, err := json.MarshalIndent(allCookies, "", "  ")
 		if err != nil {
-			log.Printf("Error marshaling cookies: %v\n", err)
+			slog.Info("Error marshaling cookies", "err", err)
 			return
 		}
 		err = os.WriteFile(path, data, 0644)
 		if err != nil {
-			log.Printf("Error writing cookies to disk: %v\n", err)
+			slog.Info("Error writing cookies to disk", "err", err)
 		} else {
-			log.Println("Cookies saved successfully.")
+			slog.Info("Cookies saved successfully")
 		}
 	} else {
-		log.Println("No valid cookies to save, skipping write.")
+		slog.Info("No valid cookies to save, skipping write.")
 		// Optional: Uncomment this if you *really* want to remove stale cookie files
 		// _ = os.Remove(path)
 	}
@@ -115,9 +115,9 @@ func filterValidCookies(cookies []*http.Cookie) []*http.Cookie {
 	valid := make([]*http.Cookie, 0)
 	now := time.Now()
 	for _, c := range cookies {
-		log.Println("Cookie:", c.Name)
+		slog.Info("Cookie", "name", c.Name)
 		if c.Expires.IsZero() || c.Expires.After(now) {
-			log.Println("appending cookie:", c.Name)
+			slog.Info("appending cookie", "name", c.Name)
 			valid = append(valid, c)
 		}
 	}

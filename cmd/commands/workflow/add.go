@@ -2,7 +2,8 @@ package workflow
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -19,7 +20,8 @@ var addCmd = &cobra.Command{
 		var wf models.Workflow
 		err := utils.LoadJSONFile(utils.GetWorkflowFile(), &wf)
 		if err != nil {
-			log.Fatalf("Failed to load workflow config: %v", err)
+			slog.Error("Failed to load workflow config", "err", err)
+			os.Exit(1)
 		}
 
 		// Select a request file using fzf

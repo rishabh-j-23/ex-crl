@@ -1,10 +1,8 @@
 package commands
 
 import (
-	"log"
+	"github.com/rishabh-j-23/ex-crl/internal/core"
 	"os"
-	"path/filepath"
-	"time"
 
 	"github.com/rishabh-j-23/ex-crl/cmd/commands/add"
 	"github.com/rishabh-j-23/ex-crl/cmd/commands/project"
@@ -28,32 +26,10 @@ Use 'ex-crl project init' to nitialize a new project
 
 Use "ex-crl [command] --help" for more information on a specific command.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if cmd.Flag("debug").Changed {
-			log.SetOutput(os.Stdout)
-			log.SetFlags(log.LstdFlags | log.Lshortfile)
-		} else {
-			log.SetFlags(log.LstdFlags)
-
-			logDir := filepath.Join(os.Getenv("HOME"), "ex-crl", "logs")
-			logFileName := "ex-crl_" + time.Now().Format("2006-01-02") + ".log"
-			logPath := filepath.Join(logDir, logFileName)
-
-			// check if log directory exists, create it if not
-			if _, err := os.Stat(logDir); os.IsNotExist(err) {
-				err := os.MkdirAll(logDir, 0755)
-				if err != nil {
-					log.Printf("Failed to create log directory (%s): %v", logDir, err)
-				}
-			}
-
-			logFile, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				// fallback to stdout if file can't be opened
-				log.SetOutput(os.Stdout)
-				log.Printf("Failed to open log file (%s), logging to stdout: %v", logPath, err)
-			} else {
-				log.SetOutput(logFile)
-			}
+		debug, _ := cmd.Flags().GetBool("debug")
+		if err := core.InitLogger(debug); err != nil {
+			// fallback to stderr if logger fails
+			os.Stderr.WriteString("Failed to initialize logger: " + err.Error() + "\n")
 		}
 	},
 }
@@ -74,4 +50,5 @@ func init() {
 	RootCmd.AddCommand(add.AddCmd)
 	RootCmd.AddCommand(project.ProjectCmd)
 	RootCmd.AddCommand(workflow.WorkflowCmd)
+	RootCmd.AddCommand(CompletionCmd)
 }

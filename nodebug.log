@@ -1,0 +1,33 @@
+ex-crl is a powerful CLI tool for managing and executing HTTP requests 
+with support for workflows, environments, and reusable configurations.
+
+Features include:
+  - Defining requests using JSON files
+  - Storing requests per project with environment-specific configs
+  - Executing chained requests using workflows
+  - Global and per-request headers
+
+Use 'ex-crl project init' to nitialize a new project
+
+Use "ex-crl [command] --help" for more information on a specific command.
+
+Usage:
+  ex-crl [command]
+
+Available Commands:
+  add         Add a new request or query to your project.
+  completion  Generate shell completion scripts
+  edit        edit the json file for request and configs
+  exec        Execute a stored HTTP request
+  help        Help about any command
+  init        Initialize a new ex-crl project
+  list        A brief description of your command
+  project     Manage project configuration and environments.
+  workflow    Manage workflows
+
+Flags:
+  -d, --debug    debug mode
+  -h, --help     help for ex-crl
+  -t, --toggle   Help message for toggle
+
+Use "ex-crl [command] --help" for more information about a command.
