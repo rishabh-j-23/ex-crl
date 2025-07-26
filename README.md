@@ -1,19 +1,77 @@
 # ex-crl
 
-The `ex-crl` project is a command-line tool designed to perform HTTP requests and print the responses in a readable format. Requests are stored in a JSON file, and the tool executes them sequentially in the order defined in the file.
+`ex-crl` is a flexible, scriptable command-line tool for managing and executing HTTP requests in a project-oriented, environment-aware way. It helps automate, test, and organize API workflows with ease.
 
-## Prerequisites
+---
 
-Before using `ex-crl`, ensure you have the following installed:
+## Features
 
-- Go 1.23 or later
-- Make
-- fzf (a command-line fuzzy finder)
-- Neovim 0.11.2 or later
+### 🚀 Project Initialization
+**Command:** `ex-crl init [project-name] [environment] [base-api-url]`  
+Quickly bootstrap a new project directory with all necessary configuration files and folders.  
+- Sets up project structure for requests, environments, and workflows.
+- Lets you specify a project name, environment, and base API URL.
+
+---
+
+### 📦 Request Management
+**Command:** `ex-crl add request`  
+Add, edit, and organize HTTP requests for your project.
+- Supports all HTTP methods (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`).
+- Each request is stored as a JSON file with a unique name and URL.
+- Supports custom headers, cookies, and environment variables.
+
+---
+
+### 🔄 Workflow Automation
+**Command:** `ex-crl workflow --edit`  
+Define and manage workflows to automate sequences of requests.
+- Specify the order of requests in a workflow JSON file.
+- Control which requests are executed or skipped using the `exec` flag.
+- Easily edit workflows to match your API testing or automation needs.
+
+---
+
+### ⚙️ Project Configuration
+**Command:** `ex-crl project --edit`  
+Manage project-level settings and environment configurations.
+- Edit the active environment, project name, and requests directory.
+- Switch environments with `ex-crl project --env`.
+
+---
+
+### 📝 Interactive CLI
+- User-friendly command-line interface with clear help and command completion.
+- All commands support `--help` for detailed usage instructions.
+
+---
+
+### 🧪 Testing and Validation
+- Built-in test suite for robust request and workflow validation.
+- Run all tests with `go test ./...` to ensure reliability.
+
+---
+
+### 🛠️ Utilities and Logging
+- Utilities for file management, path handling, and more.
+- Structured logging for all operations, with automatic log rotation and fallback to user directory if system logs are unavailable.
+
+---
+
+### 🖥️ Shell Autocompletion
+**Command:**  
+```bash
+ex-crl completion bash        # for Bash
+ex-crl completion zsh         # for Zsh
+ex-crl completion fish        # for Fish
+ex-crl completion powershell  # for PowerShell
+```
+- Enables tab-completion for commands and flags in your shell.
+- Follow the output instructions to add completion to your shell profile.
+
+---
 
 ## Installation
-
-To install `ex-crl`, run the following commands:
 
 ```bash
 git clone https://github.com/rishabh-j-23/ex-crl.git
@@ -22,129 +80,86 @@ make build
 make install
 ```
 
-## TODO
-
-- [ ] Add support for graphQL requests
-- [ ] Add support for windows 
+---
 
 ## Usage
 
 ### 1. Initialize a New Project
 
-Navigate to your project directory and initialize a new `ex-crl` project:
-
 ```bash
-cd 
-ex-crl init
+ex-crl init myproject dev https://api.example.com
 ```
+Creates the project structure needed to manage requests and workflows.
 
-This creates the project structure needed to manage requests and workflows.
+---
 
 ### 2. Add Requests
 
-Add HTTP requests to your project with:
-
 ```bash
-ex-crl add request   
+ex-crl add request
 ```
+Guides you through adding a new HTTP request to your project.
 
-- ``: HTTP method such as `GET`, `POST`, `PUT`, `DELETE`, or `PATCH`.
-- ``: A unique identifier for the request.
-- ``: The URL to which the request will be sent.
+---
 
 ### 3. Edit Project Configuration
-
-Edit the project configuration file to set parameters like the active environment, project name, and requests directory:
 
 ```bash
 ex-crl project --edit
 ```
+Opens the configuration file in your default editor for customization.
 
-This opens the configuration file in your default editor.
+---
 
 ### 4. Edit Workflow Configuration
-
-Modify the workflow configuration to specify the order in which requests are executed:
 
 ```bash
 ex-crl workflow --edit
 ```
+Modify the workflow file to specify the order and execution of requests.
 
-The workflow file schema looks like this:
-
-```json
-{
-    "workflow": [
-        {
-            "request-name": "sample-request-name",
-            "exec": false
-        },
-        {
-            "request-name": "users_login-rishabh",
-            "exec": false
-        }
-    ]
-}
-```
-
-- The order of requests in the `"workflow"` array determines their execution order.
-- The `"exec"` field controls whether a request is executed (`true`) or skipped (`false`).
+---
 
 ### 5. Execute the Workflow
-
-Run the workflow to execute the requests in the specified order:
 
 ```bash
 ex-crl exec
 ```
+Runs the workflow, executing requests in the specified order.
+
+---
 
 ### 6. Change the Active Environment
 
-Switch the active environment in the project configuration:
-
 ```bash
-ex-crl project --env 
+ex-crl project --env
 ```
+Switches the environment used for request execution.
 
-This changes the environment used for request execution.
-
-This tool streamlines managing and executing HTTP requests in a project-oriented and environment-aware manner, making it easier to automate and test APIs.
+---
 
 ## Logging
 
-`ex-crl` uses structured logging for all operations. By default, logs are written to `/var/log/ex-crl/ex-crl.log` (requires root permissions to create the directory on first use). Logs are rotated daily, compressed after a day, and deleted after a week.
+- Logs are written to `/var/log/ex-crl/ex-crl.log` (system-wide) or `$HOME/ex-crl/logs/ex-crl.log` (user fallback).
+- Logs are rotated daily, compressed after a day, and deleted after a week.
 
-If `/var/log/ex-crl` is not writable, logs will be written to `$HOME/ex-crl/logs/ex-crl.log` instead. You can check logs for troubleshooting and auditing.
-
-## Shell Autocompletion
-
-`ex-crl` supports shell autocompletion for Bash, Zsh, Fish, and PowerShell. To enable autocompletion, run:
-
-```bash
-ex-crl completion bash   # for Bash
-ex-crl completion zsh    # for Zsh
-ex-crl completion fish   # for Fish
-ex-crl completion powershell # for PowerShell
-```
-
-Follow the output instructions to add completion to your shell profile.
+---
 
 ## Running Tests
-
-To run all tests:
 
 ```bash
 go test ./...
 ```
+Tests are located in the `internal/` directory and cover core logic and request construction.
 
-Ensure you have all dependencies installed. Tests are located in the `internal/` directory and cover core logic and request construction.
+---
 
 ## Contributing
 
-Contributions are welcome! To contribute:
+Contributions are welcome!  
+If you find a bug or want to suggest a new feature, please open an issue or pull request.
 
-- If you find a bug or a new feature please feel free to raise a pull request! Contributions are welcome!
-
+---
 
 ## License
 
