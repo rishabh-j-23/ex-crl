@@ -52,5 +52,8 @@ func GetProjectDir() string {
 }
 
 func GetRequestsDir() string {
+	if dir := os.Getenv("EX_CRL_REQUESTS_DIR"); dir != "" {
+		return dir
+	}
 	return filepath.Join(GetProjectDir(), "requests")
 }

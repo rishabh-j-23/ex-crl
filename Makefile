@@ -26,3 +26,6 @@ uninstall:
 	@rm -f ~/.local/bin/ex-crl
 	@rm -rf ~/.config/ex-crl
 	@echo "ex-crl uninstalled."
+
+test:
+	go test ./...

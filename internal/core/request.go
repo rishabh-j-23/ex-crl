@@ -17,6 +17,9 @@ import (
 )
 
 func AddRequest(httpMethod, requestName, endpoint string) {
+	if httpMethod == "" || requestName == "" || endpoint == "" {
+		panic("httpMethod, requestName, and endpoint are required")
+	}
 	requestsDir := utils.GetRequestsDir()
 	assert.EnsureDirExists(requestsDir)
 
@@ -25,6 +28,9 @@ func AddRequest(httpMethod, requestName, endpoint string) {
 	// Prevent overwrite if file exists
 	if _, err := os.Stat(filePath); err == nil {
 		fmt.Printf("Request '%s' already exists\n", requestName)
+		if os.Getenv("EX_CRL_TEST_MODE") != "" {
+			panic("duplicate request")
+		}
 		os.Exit(1)
 	}
 
@@ -44,7 +50,9 @@ func AddRequest(httpMethod, requestName, endpoint string) {
 	err = os.WriteFile(filePath, data, 0644)
 	assert.ErrIsNil(err, "Failed to write request file")
 
-	editor.LaunchEditor(filePath)
+	if os.Getenv("EX_CRL_SKIP_EDITOR") == "" {
+		editor.LaunchEditor(filePath)
+	}
 
 	fmt.Printf("Request '%s' added at %s\n", requestName, filePath)
 }
