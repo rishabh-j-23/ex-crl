@@ -143,10 +143,8 @@ Ensure you have all dependencies installed. Tests are located in the `internal/`
 
 Contributions are welcome! To contribute:
 
-- Fork the repository and create a new branch for your feature or bugfix.
-- Write clear, concise commit messages and add tests for new features.
-- Run `go test ./...` and ensure all tests pass before submitting a pull request.
-- If you find a bug or have a feature request, please open an issue or submit a pull request on the GitHub repository.
+- If you find a bug or a new feature please feel free to raise a pull request! Contributions are welcome!
+
 
 ## License
 
