@@ -9,11 +9,11 @@
 - **Go**: 1.23 or later
 - **Make**: for build/install convenience
 - **A text editor**: The `$EDITOR` environment variable should be set (e.g., `vim`, `nvim`, `nano`, `code`, etc.)
-- **fzf**: (optional) for fuzzy selection in interactive commands
-- **Neovim**: (optional) for advanced editing features
+- **fzf**: required for fuzzy selection in interactive commands
+- **Neovim**: required as the default editor fallback
 
 > **Note:**
-> - The `$EDITOR` environment variable is used to open configuration and request files for editing. If not set, `ex-crl` will attempt to use `vi` or `nano` as a fallback, but setting `$EDITOR` is highly recommended for a smooth experience.
+> - The `$EDITOR` environment variable is used to open configuration and request files for editing. If not set, `ex-crl` will use `nvim` (Neovim) as the default fallback editor. Please ensure Neovim is installed and accessible in your PATH for the best experience.
 
 ---
 
