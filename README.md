@@ -97,6 +97,55 @@ make install
 
 ## Usage
 
+### Example: From Project Init to Workflow Execution
+
+1. **Initialize a New Project**
+
+   ```bash
+   ex-crl init myproject dev https://api.example.com
+   ```
+   Creates a new project named `myproject` with a `dev` environment and sets the base API URL.
+
+2. **Add HTTP Requests**
+
+   ```bash
+   ex-crl add request
+   ```
+   Follow the prompts to add a new request (e.g., `get-users`). Repeat to add more requests (e.g., `create-user`).
+
+3. **Edit the Workflow**
+
+   ```bash
+   ex-crl workflow --edit
+   ```
+   This opens the workflow configuration in your editor (default: `nvim` or your `$EDITOR`).
+   Example workflow file:
+   ```json
+   {
+       "workflow": [
+           { "request-name": "get-users", "exec": true },
+           { "request-name": "create-user", "exec": true }
+       ]
+   }
+   ```
+   Arrange the requests in the order you want them executed and set `"exec": true` for each.
+
+4. **Execute the Workflow**
+
+   ```bash
+   ex-crl exec
+   ```
+   Runs the workflow, executing each request in order. Responses are printed to the terminal.
+
+5. **(Optional) Switch Environments**
+
+   ```bash
+   ex-crl project --env
+   ```
+   Change the active environment if you have multiple (e.g., `dev`, `staging`, `prod`).
+
+---
+
 ### 1. Initialize a New Project
 
 ```bash
