@@ -81,6 +81,10 @@ func CreateRequest(r models.Request, p models.ProjectConfig) (*http.Request, err
 	}
 
 	resolveRequestHeaders(req, &p, &r)
+	// Set custom User-Agent if not already set
+	if req.Header.Get("User-Agent") == "" {
+		req.Header.Set("User-Agent", "ex-crl/1.0 (+https://github.com/rishabh-j-23/ex-crl)")
+	}
 	resolveRequestQueryParams(req, &r)
 	resolvePathParams(req, &r)
 
