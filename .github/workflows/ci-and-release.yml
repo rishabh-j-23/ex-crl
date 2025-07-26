@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          release_name: ex-crl-${{ github.ref_name }}
           draft: false
           prerelease: false
       # Optional: Upload build artifacts (binaries, etc.)
