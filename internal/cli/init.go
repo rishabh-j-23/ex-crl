@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/fatih/color"
 	"github.com/rishabh-j-23/ex-crl/internal/app"
 	"github.com/rishabh-j-23/ex-crl/internal/assert"
 	"github.com/spf13/cobra"
@@ -35,7 +34,6 @@ var initCmd = &cobra.Command{
 		})
 
 		app.InitProject(projectName, envName, baseUrl)
-		color.Green("Project initialized successfully!")
 	},
 }
 
