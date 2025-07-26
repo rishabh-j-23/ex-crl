@@ -1,12 +1,12 @@
-package commands
+package cli
 
 import (
-	"github.com/rishabh-j-23/ex-crl/internal/core"
+	"github.com/rishabh-j-23/ex-crl/internal/app"
 	"os"
 
-	"github.com/rishabh-j-23/ex-crl/cmd/commands/add"
-	"github.com/rishabh-j-23/ex-crl/cmd/commands/project"
-	"github.com/rishabh-j-23/ex-crl/cmd/commands/workflow"
+	"github.com/rishabh-j-23/ex-crl/internal/cli/add"
+	"github.com/rishabh-j-23/ex-crl/internal/cli/project"
+	"github.com/rishabh-j-23/ex-crl/internal/cli/workflow"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +27,7 @@ Use 'ex-crl project init' to nitialize a new project
 Use "ex-crl [command] --help" for more information on a specific command.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		debug, _ := cmd.Flags().GetBool("debug")
-		if err := core.InitLogger(debug); err != nil {
+		if err := app.InitLogger(debug); err != nil {
 			// fallback to stderr if logger fails
 			os.Stderr.WriteString("Failed to initialize logger: " + err.Error() + "\n")
 		}

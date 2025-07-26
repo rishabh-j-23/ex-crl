@@ -54,6 +54,9 @@ func GetFile(dir, requestName string) string {
 }
 
 func GetProjectConfig() string {
+	if override := os.Getenv("EX_CRL_PROJECT_CONFIG"); override != "" {
+		return override
+	}
 	projectsDir := GetProjectDir()
 	return GetFile(projectsDir, ProjectConfigJson)
 }

@@ -1,8 +1,8 @@
 package project
 
 import (
+	"github.com/rishabh-j-23/ex-crl/internal/app"
 	"github.com/rishabh-j-23/ex-crl/internal/assert"
-	"github.com/rishabh-j-23/ex-crl/internal/core"
 	"github.com/rishabh-j-23/ex-crl/internal/editor"
 	"github.com/rishabh-j-23/ex-crl/utils"
 	"github.com/spf13/cobra"
@@ -26,7 +26,7 @@ Project is auto-selected based on the current directory. It is recommended to be
 		assert.ErrIsNil(err, "Error parsing the val for --set-env")
 
 		if flagVal != "" {
-			core.SwitchEnv(flagVal)
+			app.SwitchEnv(flagVal)
 		}
 
 		if editProjectFile {

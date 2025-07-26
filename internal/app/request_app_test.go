@@ -1,7 +1,7 @@
-package core_test
+package app_test
 
 import (
-	"github.com/rishabh-j-23/ex-crl/internal/core"
+	"github.com/rishabh-j-23/ex-crl/internal/app"
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,7 +13,7 @@ func TestAddRequest_InvalidArgs(t *testing.T) {
 			t.Errorf("Expected panic for missing arguments, got none")
 		}
 	}()
-	core.AddRequest("GET", "", "/api/test") // requestName is empty
+	app.AddRequest("GET", "", "/api/test") // requestName is empty
 }
 
 func TestAddRequest_ValidArgs(t *testing.T) {
@@ -25,7 +25,7 @@ func TestAddRequest_ValidArgs(t *testing.T) {
 
 	os.Setenv("EX_CRL_SKIP_EDITOR", "1")
 	os.Setenv("EX_CRL_TEST_MODE", "1")
-	core.AddRequest("GET", "dup", "/api/dup")
+	app.AddRequest("GET", "dup", "/api/dup")
 
 	defer func() {
 		if r := recover(); r == nil {
@@ -33,5 +33,5 @@ func TestAddRequest_ValidArgs(t *testing.T) {
 		}
 	}()
 	os.Setenv("EX_CRL_SKIP_EDITOR", "1")
-	core.AddRequest("GET", "dup", "/api/dup")
+	app.AddRequest("GET", "dup", "/api/dup")
 }

@@ -1,9 +1,9 @@
 CMD=init
 
 run:
-	go run ./cmd/ex-crl/main.go ${CMD}
+	go run ./cmd/main.go ${CMD}
 build:
-	@go build -o ex-crl ./cmd/ex-crl/main.go
+	@go build -o ex-crl ./cmd/main.go
 
 install:
 	@echo "Downloading dependencies"
@@ -28,4 +28,4 @@ uninstall:
 	@echo "ex-crl uninstalled."
 
 test:
-	go test ./...
+	go test -v ./...

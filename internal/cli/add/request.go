@@ -1,8 +1,8 @@
 package add
 
 import (
+	"github.com/rishabh-j-23/ex-crl/internal/app"
 	"github.com/rishabh-j-23/ex-crl/internal/assert"
-	"github.com/rishabh-j-23/ex-crl/internal/core"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ Examples:
 			"requestName": requestName,
 			"endpoint":    endpoint,
 		})
-		core.AddRequest(httpMethod, requestName, endpoint)
+		app.AddRequest(httpMethod, requestName, endpoint)
 	},
 }
 

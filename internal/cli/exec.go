@@ -1,9 +1,9 @@
-package commands
+package cli
 
 import (
 	"path/filepath"
 
-	"github.com/rishabh-j-23/ex-crl/internal/core"
+	"github.com/rishabh-j-23/ex-crl/internal/app"
 	"github.com/rishabh-j-23/ex-crl/internal/editor"
 	"github.com/rishabh-j-23/ex-crl/utils"
 	"github.com/spf13/cobra"
@@ -23,7 +23,7 @@ var execCmd = &cobra.Command{
 			editor.LaunchEditor(filepath.Join(utils.GetRequestsDir(), requestName))
 		}
 
-		core.ExecRequest(requestName)
+		app.ExecRequest(requestName)
 	},
 }
 
