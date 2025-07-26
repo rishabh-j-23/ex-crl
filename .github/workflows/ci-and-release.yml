@@ -1,19 +1,33 @@
-name: Release
+name: CI and Release
 
 on:
   push:
     tags:
-      - 'v*' # Triggers on tags like v0.0.1, v1.2.3, etc.
+      - 'v*'
 
 jobs:
-  release:
-    name: Create GitHub Release
+  build:
     runs-on: ubuntu-latest
-    needs: [ci]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+      - name: Build
+        run: go build -v ./...
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: make test
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -24,7 +38,6 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
-
       # Optional: Upload build artifacts (binaries, etc.)
       # - name: Upload Release Asset
       #   uses: actions/upload-release-asset@v1
