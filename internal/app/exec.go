@@ -46,7 +46,7 @@ func PerformRequest(request models.Request, jar http.CookieJar) {
 	assert.ErrIsNil(err, "Error while performing the request")
 
 	utils.TrackDomain(httpReq.URL)
-
+	utils.ForceSaveCookiesFromHeader(resp, httpReq.URL, jar)
 	defer resp.Body.Close()
 
 	end := time.Now()
@@ -109,6 +109,7 @@ func executeSilently(request models.Request, jar http.CookieJar) {
 	assert.ErrIsNil(err, "Error while performing the request")
 
 	utils.TrackDomain(httpReq.URL)
+	utils.ForceSaveCookiesFromHeader(resp, httpReq.URL, jar)
 
 	slog.Info("Request executed successfully", "request", request.Name)
 	defer resp.Body.Close()

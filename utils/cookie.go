@@ -124,6 +124,26 @@ func filterValidCookies(cookies []*http.Cookie) []*http.Cookie {
 	return valid
 }
 
+// ForceSaveCookiesFromHeader parses Set-Cookie headers and saves them to the jar, patching Secure for localhost over HTTP.
+func ForceSaveCookiesFromHeader(resp *http.Response, reqURL *url.URL, jar http.CookieJar) {
+	setCookies := resp.Cookies()
+	if len(setCookies) == 0 {
+		return
+	}
+	for _, c := range setCookies {
+		if reqURL.Scheme == "http" && isLocalhost(reqURL.Host) && c.Secure {
+			c.Secure = false
+		}
+	}
+	jar.SetCookies(reqURL, setCookies)
+}
+
+// isLocalhost checks if host is localhost or 127.0.0.1 (with or without port)
+func isLocalhost(host string) bool {
+	return host == "localhost" || host == "127.0.0.1" ||
+		len(host) > 10 && (host[:10] == "localhost:" || host[:10] == "127.0.0.1:")
+}
+
 // TrackDomain marks a domain as used (to persist later).
 func TrackDomain(u *url.URL) {
 	usedDomains[u.Scheme+"://"+u.Host] = true
