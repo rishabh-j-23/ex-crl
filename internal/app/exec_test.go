@@ -30,7 +30,8 @@ func TestPerformRequest_Basic(t *testing.T) {
 		HttpMethod: "GET",
 		Endpoint:   "/foo",
 	}
-	app.PerformRequest(req)
+	jar := utils.LoadCookiesFromDisk()
+	app.PerformRequest(req, jar)
 }
 
 func TestExecRequest_Basic(t *testing.T) {
