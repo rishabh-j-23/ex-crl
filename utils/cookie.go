@@ -130,12 +130,16 @@ func ForceSaveCookiesFromHeader(resp *http.Response, reqURL *url.URL, jar http.C
 	if len(setCookies) == 0 {
 		return
 	}
+	slog.Info("ForceSaveCookies: Found Set-Cookie headers", "count", len(setCookies))
 	for _, c := range setCookies {
+		slog.Info("ForceSaveCookies: Parsed cookie", "name", c.Name, "Secure", c.Secure)
 		if reqURL.Scheme == "http" && isLocalhost(reqURL.Host) && c.Secure {
 			c.Secure = false
+			slog.Info("ForceSaveCookies: Patched Secure=false for cookie", "name", c.Name)
 		}
 	}
 	jar.SetCookies(reqURL, setCookies)
+	slog.Info("ForceSaveCookies: Saved cookies to jar", "url", reqURL.String())
 }
 
 // isLocalhost checks if host is localhost or 127.0.0.1 (with or without port)
