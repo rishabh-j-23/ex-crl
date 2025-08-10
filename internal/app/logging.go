@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -54,9 +55,12 @@ func InitLogger(debug bool) error {
 		return fmt.Errorf("failed to open log file: %w", err)
 	}
 
+	// Redirect standard log output to the log file
+	log.SetOutput(f)
+
 	handlers := []slog.Handler{slog.NewTextHandler(f, &slog.HandlerOptions{Level: slog.LevelInfo})}
 	if debug {
-		handlers = append(handlers, slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug}))
+		handlers = append(handlers, NewColorHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	}
 	var h slog.Handler
 	if len(handlers) == 1 {
@@ -67,6 +71,60 @@ func InitLogger(debug bool) error {
 	Logger = slog.New(h)
 	slog.SetDefault(Logger)
 	return nil
+}
+
+// ColorHandler prints colored, formatted logs to the console
+// Format: [timestamp] [LEVEL] message {attrs}
+type ColorHandler struct {
+	out  *os.File
+	opts *slog.HandlerOptions
+}
+
+func NewColorHandler(out *os.File, opts *slog.HandlerOptions) *ColorHandler {
+	return &ColorHandler{out: out, opts: opts}
+}
+
+func (h *ColorHandler) Enabled(ctx context.Context, level slog.Level) bool {
+	if h.opts != nil {
+		return level >= h.opts.Level.Level()
+	}
+	return true
+}
+
+func (h *ColorHandler) Handle(ctx context.Context, r slog.Record) error {
+	color := ""
+	reset := "\033[0m"
+	switch r.Level {
+	case slog.LevelInfo:
+		color = "\033[32m" // Green
+	case slog.LevelWarn:
+		color = "\033[33m" // Yellow
+	case slog.LevelError:
+		color = "\033[31m" // Red
+	case slog.LevelDebug:
+		color = "\033[34m" // Blue
+	default:
+		color = ""
+	}
+	timestamp := r.Time.Format("2006-01-02 15:04:05")
+	level := r.Level.String()
+	msg := r.Message
+	attrs := ""
+	r.Attrs(func(a slog.Attr) bool {
+		attrs += fmt.Sprintf("%s=%v ", a.Key, a.Value)
+		return true
+	})
+	logLine := fmt.Sprintf("%s[%s] [%s] %s %s%s\n", color, timestamp, strings.ToUpper(level), msg, attrs, reset)
+	_, err := h.out.WriteString(logLine)
+	return err
+}
+
+func (h *ColorHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return h // No-op for simplicity
+}
+
+func (h *ColorHandler) WithGroup(name string) slog.Handler {
+	return h // No-op for simplicity
 }
 
 // --- End of logger setup ---

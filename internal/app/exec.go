@@ -15,8 +15,10 @@ import (
 )
 
 func ExecRequest(requestName string) {
+	jar := utils.LoadCookiesFromDisk() // Load once
+
 	// First run the workflow steps if any
-	runWorkflowSteps()
+	runWorkflowSteps(jar)
 
 	// Then run the main request
 	var request models.Request
@@ -24,10 +26,12 @@ func ExecRequest(requestName string) {
 	err := utils.LoadJSONFile(path, &request)
 	assert.ErrIsNil(err, fmt.Sprintf("Error unmarshalling json file %s", requestName))
 
-	PerformRequest(request)
+	PerformRequest(request, jar)
+
+	utils.SaveCookiesToDisk() // Save once at the end
 }
 
-func PerformRequest(request models.Request) {
+func PerformRequest(request models.Request, jar http.CookieJar) {
 	var projectConfig models.ProjectConfig
 	utils.LoadJSONFile(utils.GetProjectConfig(), &projectConfig)
 
@@ -36,13 +40,12 @@ func PerformRequest(request models.Request) {
 	assert.ErrIsNil(err, "Error creating the HTTP request")
 
 	client := &http.Client{
-		Jar: utils.LoadCookiesFromDisk(), // Load persistent cookies
+		Jar: jar,
 	}
 	resp, err := client.Do(httpReq)
 	assert.ErrIsNil(err, "Error while performing the request")
 
 	utils.TrackDomain(httpReq.URL)
-	utils.SaveCookiesToDisk()
 
 	defer resp.Body.Close()
 
@@ -70,7 +73,7 @@ func printRequestDetails(httpReq *http.Request, httpResp *http.Response, timeTak
 	fmt.Printf("\n[time taken: %v]\n", timeTakenByRequest)
 }
 
-func runWorkflowSteps() {
+func runWorkflowSteps(jar http.CookieJar) {
 	var workflow models.Workflow
 	err := utils.LoadJSONFile(utils.GetWorkflowFile(), &workflow)
 	if err != nil {
@@ -84,13 +87,13 @@ func runWorkflowSteps() {
 			path := utils.GetFile(utils.GetRequestsDir(), step.RequestName+".json")
 			err := utils.LoadJSONFile(path, &req)
 			if err == nil {
-				executeSilently(req)
+				executeSilently(req, jar)
 			}
 		}
 	}
 }
 
-func executeSilently(request models.Request) {
+func executeSilently(request models.Request, jar http.CookieJar) {
 	var projectConfig models.ProjectConfig
 	utils.LoadJSONFile(utils.GetProjectConfig(), &projectConfig)
 
@@ -100,13 +103,12 @@ func executeSilently(request models.Request) {
 	}
 
 	client := &http.Client{
-		Jar: utils.LoadCookiesFromDisk(), // Load persistent cookies
+		Jar: jar,
 	}
 	resp, err := client.Do(httpReq)
 	assert.ErrIsNil(err, "Error while performing the request")
 
 	utils.TrackDomain(httpReq.URL)
-	utils.SaveCookiesToDisk()
 
 	slog.Info("Request executed successfully", "request", request.Name)
 	defer resp.Body.Close()
